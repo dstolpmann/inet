@@ -43,10 +43,8 @@ import inet.linklayer.ieee80211.mac.coordinationfunction.Hcf;
 // the frame for transmission.
 //
 // The module has an internal queue, but usually it is to be used with an
-// external passive queue module (its name should be given in the queueModule
-// parameter; specifying "" causes the internal queue to be used). The passive
-// queue module is a simple module whose C++ class implements the IPassiveQueue
-// interface.
+// external passive queue module. The passive queue module is a simple module
+// whose C++ class implements the IPassiveQueue interface.
 //
 // <b>Limitations</b>
 //
