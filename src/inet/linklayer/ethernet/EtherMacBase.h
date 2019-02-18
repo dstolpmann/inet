@@ -25,7 +25,7 @@
 #include "inet/common/lifecycle/ILifecycle.h"
 #include "inet/common/lifecycle/NodeStatus.h"
 #include "inet/common/packet/Packet.h"
-#include "inet/common/queue/IPassiveQueue.h"
+#include "inet/common/newqueue/IPacketQueue.h"
 #include "inet/linklayer/base/MacBase.h"
 #include "inet/linklayer/common/MacAddress.h"
 #include "inet/linklayer/ethernet/EtherFrame_m.h"
@@ -114,12 +114,12 @@ class INET_API EtherMacBase : public MacBase
     {
       public:
         InnerQueue *innerQueue = nullptr;
-        IPassiveQueue *extQueue = nullptr;
+        inet::queue::IPacketQueue *extQueue = nullptr;
 
       public:
         ~MacQueue() { delete innerQueue; };
         bool isEmpty() { return innerQueue ? innerQueue->isEmpty() : extQueue->isEmpty(); }
-        void setExternalQueue(IPassiveQueue *_extQueue)
+        void setExternalQueue(inet::queue::IPacketQueue *_extQueue)
         { delete innerQueue; innerQueue = nullptr; extQueue = _extQueue; };
         void setInternalQueue(const char *name = nullptr, int limit = 0)
         { delete innerQueue; innerQueue = new InnerQueue(name, limit); extQueue = nullptr; };

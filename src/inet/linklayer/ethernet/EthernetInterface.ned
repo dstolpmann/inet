@@ -18,7 +18,7 @@
 
 package inet.linklayer.ethernet;
 
-import inet.common.queue.IOutputQueue;
+import inet.common.newqueue.IPacketQueue;
 import inet.linklayer.contract.IEtherMac;
 import inet.linklayer.contract.IEthernetInterface;
 import inet.linklayer.contract.ITrafficConditioner;
@@ -54,7 +54,7 @@ module EthernetInterface extends InterfaceEntry like IEthernetInterface
         egressTC: <default("")> like ITrafficConditioner if typename != "" {
             @display("p=100,100");
         }
-        queue: <default("")> like IOutputQueue if typename != "" {
+        queue: <default("")> like IPacketQueue if typename != "" {
             parameters:
                 @display("p=150,400;q=l2queue");
         }

@@ -26,7 +26,6 @@
 #include "inet/common/checksum/EthernetCRC.h"
 #include "inet/common/lifecycle/ModuleOperations.h"
 #include "inet/common/packet/chunk/BytesChunk.h"
-#include "inet/common/queue/IPassiveQueue.h"
 #include "inet/linklayer/ethernet/EtherFrame_m.h"
 #include "inet/linklayer/ethernet/EtherMacBase.h"
 #include "inet/linklayer/ethernet/EtherPhyFrame_m.h"
@@ -205,19 +204,18 @@ void EtherMacBase::initializeQueueModule()
 {
     if (par("queueModule").stringValue()[0]) {
         cModule *module = getModuleFromPar<cModule>(par("queueModule"), this);
-        IPassiveQueue *queueModule;
+        inet::queue::IPacketQueue *queueModule;
         if (module->isSimple())
-            queueModule = check_and_cast<IPassiveQueue *>(module);
+            queueModule = check_and_cast<inet::queue::IPacketQueue *>(module);
         else {
             cGate *queueOut = module->gate("out")->getPathStartGate();
-            queueModule = check_and_cast<IPassiveQueue *>(queueOut->getOwnerModule());
+            queueModule = check_and_cast<inet::queue::IPacketQueue *>(queueOut->getOwnerModule());
         }
 
         EV_DETAIL << "Requesting first frame from queue module\n";
         txQueue.setExternalQueue(queueModule);
 
-        if (txQueue.extQueue->getNumPendingRequests() == 0)
-            txQueue.extQueue->requestPacket();
+        txQueue.extQueue->requestPacket();
     }
     else {
         txQueue.setInternalQueue("txQueue", par("txQueueLimit"));
@@ -370,8 +368,7 @@ void EtherMacBase::processConnectDisconnect()
 
         if (txQueue.extQueue) {
             // Clear external queue: send a request, and received packet will be deleted in handleMessage()
-            if (txQueue.extQueue->getNumPendingRequests() == 0)
-                txQueue.extQueue->requestPacket();
+            txQueue.extQueue->requestPacket();
         }
         else {
             // Clear inner queue
@@ -463,13 +460,12 @@ void EtherMacBase::flushQueue()
     }
     else {
         while (!txQueue.extQueue->isEmpty()) {
-            cMessage *msg = txQueue.extQueue->pop();
+            cMessage *msg = txQueue.extQueue->popPacket();
             PacketDropDetails details;
             details.setReason(INTERFACE_DOWN);
             emit(packetDroppedSignal, msg, &details);
             delete msg;
         }
-        txQueue.extQueue->clear();    // clear request count
     }
 }
 
@@ -478,7 +474,8 @@ void EtherMacBase::clearQueue()
     if (txQueue.innerQueue)
         txQueue.innerQueue->clear();
     else
-        txQueue.extQueue->clear(); // clear request count
+        while (!txQueue.extQueue->isEmpty())
+            delete txQueue.extQueue->popPacket();
 }
 
 void EtherMacBase::refreshConnection()
@@ -616,8 +613,7 @@ void EtherMacBase::getNextFrameFromQueue()
 {
     ASSERT(nullptr == curTxFrame);
     if (txQueue.extQueue) {
-        if (txQueue.extQueue->getNumPendingRequests() == 0)
-            txQueue.extQueue->requestPacket();
+        txQueue.extQueue->requestPacket();
     }
     else {
         if (!txQueue.innerQueue->isEmpty())
@@ -628,10 +624,8 @@ void EtherMacBase::getNextFrameFromQueue()
 void EtherMacBase::requestNextFrameFromExtQueue()
 {
     ASSERT(nullptr == curTxFrame);
-    if (txQueue.extQueue) {
-        if (txQueue.extQueue->getNumPendingRequests() == 0)
-            txQueue.extQueue->requestPacket();
-    }
+    if (txQueue.extQueue)
+        txQueue.extQueue->requestPacket();
 }
 
 void EtherMacBase::finish()

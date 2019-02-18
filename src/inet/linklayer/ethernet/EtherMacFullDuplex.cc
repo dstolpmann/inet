@@ -18,7 +18,6 @@
 
 #include "inet/common/Simsignals.h"
 #include "inet/common/ProtocolTag_m.h"
-#include "inet/common/queue/IPassiveQueue.h"
 #include "inet/linklayer/common/InterfaceTag_m.h"
 #include "inet/linklayer/ethernet/EtherEncap.h"
 #include "inet/linklayer/ethernet/EtherFrame_m.h"
