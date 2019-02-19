@@ -20,6 +20,7 @@
 
 #include "inet/common/FSMA.h"
 #include "inet/common/packet/Packet.h"
+#include "inet/common/newqueue/contract/IPacketQueue.h"
 #include "inet/common/queue/PacketQueue.h"
 #include "inet/linklayer/base/MacProtocolBase.h"
 #include "inet/linklayer/csmaca/CsmaCaMacHeader_m.h"
@@ -78,7 +79,10 @@ class INET_API CsmaCaMac : public MacProtocolBase
     int retryCounter = -1;
 
     /** Messages received from upper layer and to be transmitted later */
-    PacketQueue transmissionQueue;
+    inet::queue::IPacketQueue *transmissionQueue = nullptr;
+
+    /** Currently transmitted frame if any */
+    Packet *currentTransmission = nullptr;
     //@}
 
     /** @name Timer messages */

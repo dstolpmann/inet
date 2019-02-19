@@ -32,19 +32,6 @@ using namespace inet::physicallayer;
 
 Define_Module(CsmaCaMac);
 
-static int getUPBasedFramePriority(cObject *obj)
-{
-    auto frame = static_cast<Packet *>(obj);
-    const auto& macHeader = frame->peekAtFront<CsmaCaMacDataHeader>();
-    int up = macHeader->getPriority();
-    return (up == UP_BK) ? -2 : (up == UP_BK2) ? -1 : up;  // because UP_BE==0, but background traffic should have lower priority than best effort
-}
-
-static int compareFramesByPriority(cObject *a, cObject *b)
-{
-    return getUPBasedFramePriority(b) - getUPBasedFramePriority(a);
-}
-
 CsmaCaMac::~CsmaCaMac()
 {
     cancelAndDelete(endSifs);
@@ -91,10 +78,7 @@ void CsmaCaMac::initialize(int stage)
         mediumStateChange = new cMessage("MediumStateChange");
 
         // set up internal queue
-        transmissionQueue.setMaxPacketLength(maxQueueSize);
-        transmissionQueue.setName("transmissionQueue");
-        if (par("prioritizeByUP"))
-            transmissionQueue.setup(&compareFramesByPriority);
+        transmissionQueue = check_and_cast<inet::queue::IPacketQueue *>(getSubmodule("queue"));
 
         // state variables
         fsm.setName("CsmaCaMac State Machine");
@@ -176,22 +160,16 @@ void CsmaCaMac::handleSelfMessage(cMessage *msg)
 
 void CsmaCaMac::handleUpperPacket(Packet *packet)
 {
-    if (maxQueueSize != -1 && (int)transmissionQueue.getLength() == maxQueueSize) {
-        EV << "message " << packet << " received from higher layer but MAC queue is full, dropping message\n";
-        emitPacketDropSignal(packet, QUEUE_OVERFLOW, maxQueueSize);
-        delete packet;
-        return;
-    }
     auto frame = check_and_cast<Packet *>(packet);
     encapsulate(frame);
     const auto& macHeader = frame->peekAtFront<CsmaCaMacHeader>();
     EV << "frame " << frame << " received from higher layer, receiver = " << macHeader->getReceiverAddress() << endl;
     ASSERT(!macHeader->getReceiverAddress().isUnspecified());
-    transmissionQueue.insert(frame);
+    transmissionQueue->pushPacket(frame);
     if (fsm.getState() != IDLE)
         EV << "deferring upper message transmission in " << fsm.getStateName() << " state\n";
     else
-        handleWithFsm(packet);
+        handleWithFsm(transmissionQueue->getPacket(0));
 }
 
 void CsmaCaMac::handleLowerPacket(Packet *packet)
@@ -373,8 +351,8 @@ void CsmaCaMac::handleWithFsm(cMessage *msg)
     if (fsm.getState() == IDLE) {
         if (isReceiving())
             handleWithFsm(mediumStateChange);
-        else if (!transmissionQueue.isEmpty())
-            handleWithFsm(transmissionQueue.front());
+        else if (!transmissionQueue->isEmpty())
+            handleWithFsm(transmissionQueue->getPacket(0));
     }
     if (isLowerMessage(msg) && frame->getOwner() == this && endSifs->getContextPointer() != frame)
         delete frame;
@@ -582,13 +560,13 @@ void CsmaCaMac::retryCurrentTransmission()
 
 Packet *CsmaCaMac::getCurrentTransmission()
 {
-    return static_cast<Packet *>(transmissionQueue.front());
+    return static_cast<Packet *>(transmissionQueue->getPacket(0));
 }
 
 void CsmaCaMac::popTransmissionQueue()
 {
     EV << "dropping frame from transmission queue\n";
-    delete transmissionQueue.pop();
+    delete transmissionQueue->popPacket();
 }
 
 void CsmaCaMac::resetTransmissionVariables()
