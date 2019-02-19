@@ -20,7 +20,6 @@
 
 #include "inet/common/FSMA.h"
 #include "inet/common/packet/Packet.h"
-#include "inet/common/queue/IPassiveQueue.h"
 #include "inet/common/queue/PacketQueue.h"
 #include "inet/linklayer/base/MacProtocolBase.h"
 #include "inet/linklayer/csmaca/CsmaCaMacHeader_m.h"
@@ -80,9 +79,6 @@ class INET_API CsmaCaMac : public MacProtocolBase
 
     /** Messages received from upper layer and to be transmitted later */
     PacketQueue transmissionQueue;
-
-    /** Passive queue module to request messages from */
-    IPassiveQueue *queueModule = nullptr;
     //@}
 
     /** @name Timer messages */
@@ -133,7 +129,6 @@ class INET_API CsmaCaMac : public MacProtocolBase
     //@{
     /** @brief Initialization of the module and its variables */
     virtual void initialize(int stage) override;
-    virtual void initializeQueueModule();
     virtual void finish() override;
     virtual void configureInterfaceEntry() override;
     //@}

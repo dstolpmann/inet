@@ -101,9 +101,6 @@ void CsmaCaMac::initialize(int stage)
         backoffPeriod = -1;
         retryCounter = 0;
 
-        // obtain pointer to external queue
-        initializeQueueModule();        //FIXME move to INITSTAGE_LINK_LAYER
-
         // statistics
         numRetry = 0;
         numSentWithoutRetry = 0;
@@ -135,20 +132,6 @@ void CsmaCaMac::initialize(int stage)
 
         radio = check_and_cast<IRadio *>(radioModule);
         radio->setRadioMode(IRadio::RADIO_MODE_RECEIVER);
-    }
-}
-
-void CsmaCaMac::initializeQueueModule()
-{
-    // use of external queue module is optional -- find it if there's one specified
-    if (par("queueModule").stringValue()[0]) {
-        cModule *module = getParentModule()->getSubmodule(par("queueModule"));
-        queueModule = check_and_cast<IPassiveQueue *>(module);
-
-        EV << "Requesting first two frames from queue module\n";
-        queueModule->requestPacket();
-        // needed for backoff: mandatory if next message is already present
-        queueModule->requestPacket();
     }
 }
 
@@ -606,11 +589,6 @@ void CsmaCaMac::popTransmissionQueue()
 {
     EV << "dropping frame from transmission queue\n";
     delete transmissionQueue.pop();
-    if (queueModule) {
-        // tell queue module that we've become idle
-        EV << "requesting another frame from queue module\n";
-        queueModule->requestPacket();
-    }
 }
 
 void CsmaCaMac::resetTransmissionVariables()
