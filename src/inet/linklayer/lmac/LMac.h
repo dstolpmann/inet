@@ -83,7 +83,7 @@ class INET_API LMac : public MacProtocolBase, public IMacProtocol
         , numSlots(0)
         , currSlot()
         , reservedMobileSlots(0)
-        , macQueue()
+        , queue()
         , radio(nullptr)
         , transmissionState(physicallayer::IRadio::TRANSMISSION_STATE_UNDEFINED)
         , queueLength(0)
@@ -180,7 +180,7 @@ class INET_API LMac : public MacProtocolBase, public IMacProtocol
 
     /** @brief A queue to store packets from upper layer in case another
        packet is still waiting for transmission..*/
-    queue::IPacketQueue *macQueue = nullptr;
+    queue::IPacketQueue *queue = nullptr;
 
     /** @brief The radio. */
     physicallayer::IRadio *radio;
