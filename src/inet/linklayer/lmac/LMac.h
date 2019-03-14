@@ -12,6 +12,7 @@
 #ifndef __INET_LMAC_H
 #define __INET_LMAC_H
 
+#include "inet/common/newqueue/contract/IPacketQueue.h"
 #include "inet/linklayer/base/MacProtocolBase.h"
 #include "inet/linklayer/common/MacAddress.h"
 #include "inet/linklayer/contract/IMacProtocol.h"
@@ -127,8 +128,6 @@ class INET_API LMac : public MacProtocolBase, public IMacProtocol
     virtual void configureInterfaceEntry() override;
     virtual void handleCommand(cMessage *msg) {}
 
-    typedef std::list<Packet *> MacQueue;
-
     /** @brief MAC states
      *
      *  The MAC states help to keep track what the MAC is actually
@@ -181,7 +180,7 @@ class INET_API LMac : public MacProtocolBase, public IMacProtocol
 
     /** @brief A queue to store packets from upper layer in case another
        packet is still waiting for transmission..*/
-    MacQueue macQueue;
+    queue::IPacketQueue *macQueue = nullptr;
 
     /** @brief The radio. */
     physicallayer::IRadio *radio;
