@@ -58,7 +58,7 @@ void BMac::initialize(int stage)
         lastDataPktSrcAddr = MacAddress::BROADCAST_ADDRESS;
 
         macState = INIT;
-        macQueue = check_and_cast<inet::queue::IPacketQueue *>(getSubmodule("queue"));
+        queue = check_and_cast<inet::queue::IPacketQueue *>(getSubmodule("queue"));
     }
     else if (stage == INITSTAGE_LINK_LAYER) {
         cModule *radioModule = getModuleFromPar<cModule>(par("radioModule"), this);
@@ -253,7 +253,7 @@ void BMac::handleSelfMessage(cMessage *msg)
             if (msg->getKind() == BMAC_CCA_TIMEOUT) {
                 // channel is clear
                 // something waiting in eth queue?
-                if (macQueue->getNumPackets() > 0) {
+                if (queue->getNumPackets() > 0) {
                     EV_DETAIL << "State CCA, message CCA_TIMEOUT, new state"
                                  " SEND_PREAMBLE" << endl;
                     macState = SEND_PREAMBLE;
@@ -349,9 +349,9 @@ void BMac::handleSelfMessage(cMessage *msg)
                 else {
                     EV_DETAIL << "State WAIT_TX_DATA_OVER, message BMAC_DATA_TX_OVER,"
                                  " new state  SLEEP" << endl;
-                    delete macQueue->popPacket();
+                    delete queue->popPacket();
                     // if something in the queue, wakeup soon.
-                    if (macQueue->getNumPackets() > 0)
+                    if (queue->getNumPackets() > 0)
                         scheduleAt(simTime() + dblrand() * checkInterval, wakeup);
                     else
                         scheduleAt(simTime() + slotDuration, wakeup);
@@ -377,12 +377,12 @@ void BMac::handleSelfMessage(cMessage *msg)
                     EV_DETAIL << "State WAIT_ACK, message BMAC_ACK_TIMEOUT, new state"
                                  " SLEEP" << endl;
                     //drop the packet
-                    cMessage *mac = macQueue->popPacket();
+                    cMessage *mac = queue->popPacket();
                     emit(linkBrokenSignal, mac);
                     delete mac;
 
                     // if something in the queue, wakeup soon.
-                    if (macQueue->getNumPackets() > 0)
+                    if (queue->getNumPackets() > 0)
                         scheduleAt(simTime() + dblrand() * checkInterval, wakeup);
                     else
                         scheduleAt(simTime() + slotDuration, wakeup);
@@ -411,9 +411,9 @@ void BMac::handleSelfMessage(cMessage *msg)
                     nbRecvdAcks++;
                     lastDataPktDestAddr = MacAddress::BROADCAST_ADDRESS;
                     cancelEvent(ack_timeout);
-                    delete macQueue->popPacket();
+                    delete queue->popPacket();
                     // if something in the queue, wakeup soon.
-                    if (macQueue->getNumPackets() > 0)
+                    if (queue->getNumPackets() > 0)
                         scheduleAt(simTime() + dblrand() * checkInterval, wakeup);
                     else
                         scheduleAt(simTime() + slotDuration, wakeup);
@@ -476,7 +476,7 @@ void BMac::handleSelfMessage(cMessage *msg)
                     EV_DETAIL << "State WAIT_DATA, message BMAC_DATA, new state SLEEP"
                               << endl;
                     // if something in the queue, wakeup soon.
-                    if (macQueue->getNumPackets() > 0)
+                    if (queue->getNumPackets() > 0)
                         scheduleAt(simTime() + dblrand() * checkInterval, wakeup);
                     else
                         scheduleAt(simTime() + slotDuration, wakeup);
@@ -489,7 +489,7 @@ void BMac::handleSelfMessage(cMessage *msg)
                 EV_DETAIL << "State WAIT_DATA, message BMAC_DATA_TIMEOUT, new state"
                              " SLEEP" << endl;
                 // if something in the queue, wakeup soon.
-                if (macQueue->getNumPackets() > 0)
+                if (queue->getNumPackets() > 0)
                     scheduleAt(simTime() + dblrand() * checkInterval, wakeup);
                 else
                     scheduleAt(simTime() + slotDuration, wakeup);
@@ -516,7 +516,7 @@ void BMac::handleSelfMessage(cMessage *msg)
                              " SLEEP" << endl;
                 // ack sent, go to sleep now.
                 // if something in the queue, wakeup soon.
-                if (macQueue->getNumPackets() > 0)
+                if (queue->getNumPackets() > 0)
                     scheduleAt(simTime() + dblrand() * checkInterval, wakeup);
                 else
                     scheduleAt(simTime() + slotDuration, wakeup);
@@ -555,7 +555,7 @@ void BMac::handleLowerPacket(Packet *packet)
 void BMac::sendDataPacket()
 {
     nbTxDataPackets++;
-    Packet *pkt = macQueue->getPacket(0)->dup();
+    Packet *pkt = queue->getPacket(0)->dup();
     attachSignal(pkt);
     const auto& hdr = pkt->peekAtFront<BMacHeader>();
     lastDataPktDestAddr = hdr->getDestAddr();
@@ -600,7 +600,7 @@ void BMac::receiveSignal(cComponent *source, simsignal_t signalID, long value, c
  */
 bool BMac::addToQueue(cMessage *msg)
 {
-    if (macQueue->getNumPackets() >= queueLength) {
+    if (queue->getNumPackets() >= queueLength) {
         // queue is full, message has to be deleted
         EV_DETAIL << "New packet arrived, but queue is FULL, so new packet is"
                      " deleted\n";
@@ -614,17 +614,17 @@ bool BMac::addToQueue(cMessage *msg)
 
     auto packet = check_and_cast<Packet *>(msg);
     encapsulate(packet);
-    macQueue->pushPacket(packet);
+    queue->pushPacket(packet);
     EV_DETAIL << "Max queue length: " << queueLength << ", packet put in queue"
-                                                        "\n  queue size: " << macQueue->getNumPackets() << " macState: "
+                                                        "\n  queue size: " << queue->getNumPackets() << " macState: "
               << macState << endl;
     return true;
 }
 
 void BMac::flushQueue()
 {
-    while (!macQueue->isEmpty()) {
-        auto packet = macQueue->popPacket();
+    while (!queue->isEmpty()) {
+        auto packet = queue->popPacket();
         PacketDropDetails details;
         details.setReason(INTERFACE_DOWN);
         emit(packetDroppedSignal, packet, &details); //FIXME this signal lumps together packets from the network and packets from higher layers! separate them
@@ -634,8 +634,8 @@ void BMac::flushQueue()
 
 void BMac::clearQueue()
 {
-    while (!macQueue->isEmpty())
-        delete macQueue->popPacket();
+    while (!queue->isEmpty())
+        delete queue->popPacket();
 }
 
 void BMac::attachSignal(Packet *macPkt)
