@@ -65,7 +65,7 @@ class INET_API XMac : public MacProtocolBase, public IMacProtocol
   public:
     XMac()
         : MacProtocolBase()
-        , macQueue()
+        , queue()
         , nbTxDataPackets(0), nbTxPreambles(0), nbRxDataPackets(0), nbRxPreambles(0)
         , nbMissedAcks(0), nbRecvdAcks(0), nbDroppedDataPackets(0), nbTxAcks(0)
         , macState(INIT)
@@ -116,7 +116,7 @@ class INET_API XMac : public MacProtocolBase, public IMacProtocol
 
     /** @brief A queue to store packets from upper layer in case another
     packet is still waiting for transmission.*/
-    inet::queue::IPacketQueue *macQueue = nullptr;
+    inet::queue::IPacketQueue *queue = nullptr;
 
     /** @name Different tracked statistics.*/
     /*@{*/
