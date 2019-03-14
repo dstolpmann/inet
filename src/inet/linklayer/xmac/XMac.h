@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-#include "inet/common/INETDefs.h"
+#include "inet/common/newqueue/contract/IPacketQueue.h"
 #include "inet/linklayer/base/MacProtocolBase.h"
 #include "inet/linklayer/common/MacAddress.h"
 #include "inet/linklayer/contract/IMacProtocol.h"
@@ -107,8 +107,6 @@ class INET_API XMac : public MacProtocolBase, public IMacProtocol
     virtual void handleCrashOperation(LifecycleOperation *operation) override {}    //TODO implementation
 
   protected:
-    typedef std::list<Packet *> MacQueue;
-
     /** implements MacBase functions */
     //@{
     virtual void flushQueue();
@@ -118,7 +116,7 @@ class INET_API XMac : public MacProtocolBase, public IMacProtocol
 
     /** @brief A queue to store packets from upper layer in case another
     packet is still waiting for transmission.*/
-    MacQueue macQueue;
+    inet::queue::IPacketQueue *macQueue = nullptr;
 
     /** @name Different tracked statistics.*/
     /*@{*/
