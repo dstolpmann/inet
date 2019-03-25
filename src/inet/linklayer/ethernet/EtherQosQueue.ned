@@ -18,44 +18,41 @@
 
 package inet.linklayer.ethernet;
 
+import inet.common.newqueue.CompoundPacketQueue;
 import inet.common.newqueue.DropTailQueue;
-import inet.common.newqueue.IPacketQueue;
-import inet.common.newqueue.Prioritizer;
+import inet.common.newqueue.contract.IPacketQueue;
+import inet.common.newqueue.PriorityScheduler;
 
 //
 // Queue module that gives the PAUSE frames a higher priority,
 // and can be parametrized with an ~IOutputQueue for serving the
 // other frames.
 //
-module EtherQosQueue like IPacketQueue
+module EtherQosQueue extends CompoundPacketQueue like IPacketQueue
 {
     parameters:
         @display("i=block/queue");
-    gates:
-        input in;
-        output out;
     submodules:
         classifier: EtherFrameClassifier {
             parameters:
-	            @display("p=100,200");
+                @display("p=100,200");
         }
         pauseQueue: DropTailQueue {
             parameters:
-	            @display("p=250,100");
+                @display("p=250,100");
         }
         dataQueue: <default("DropTailQueue")> like IPacketQueue {
             parameters:
                 @display("p=250,300;q=l2queue");
         }
-        scheduler: Prioritizer {
+        scheduler: PriorityScheduler {
             parameters:
-                asynchronous = default(true);
-	            @display("p=400,200");
+                @display("p=400,200");
         }
     connections:
         in --> classifier.in;
-        classifier.pauseOut --> pauseQueue.in;
-        classifier.defaultOut --> dataQueue.in;
+        classifier.out++ --> pauseQueue.in;
+        classifier.out++ --> dataQueue.in;
         pauseQueue.out --> scheduler.in++;
         dataQueue.out --> scheduler.in++;
         scheduler.out --> out;

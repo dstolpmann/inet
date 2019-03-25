@@ -23,20 +23,16 @@ namespace inet {
 
 Define_Module(EtherFrameClassifier);
 
-void EtherFrameClassifier::handleMessage(cMessage *msg)
+int EtherFrameClassifier::classifyPacket(Packet *packet)
 {
-    //FIXME msg is always Packet*, need another way to detect pause frame
-    if (Packet *pk = dynamic_cast<Packet *>(msg)) {
-        auto hdr = pk->peekAtFront<EthernetMacHeader>(b(-1), Chunk::PF_ALLOW_NULLPTR|Chunk::PF_ALLOW_INCOMPLETE);
-        if (hdr != nullptr) {
-            if (hdr->getTypeOrLength() == ETHERTYPE_FLOW_CONTROL) {
-                send(msg, "pauseOut");
-                return;
-            }
+    //FIXME need another way to detect pause frame
+    auto hdr = packet->peekAtFront<EthernetMacHeader>(b(-1), Chunk::PF_ALLOW_NULLPTR|Chunk::PF_ALLOW_INCOMPLETE);
+    if (hdr != nullptr) {
+        if (hdr->getTypeOrLength() == ETHERTYPE_FLOW_CONTROL) {
+            return 0;
         }
     }
-
-    send(msg, "defaultOut");
+    return 1;
 }
 
 } // namespace inet

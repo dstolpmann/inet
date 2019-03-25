@@ -18,6 +18,7 @@
 
 package inet.linklayer.ethernet;
 
+import inet.common.newqueue.contract.IPacketQueue;
 import inet.linklayer.contract.IEtherMac;
 
 //
@@ -105,7 +106,7 @@ import inet.linklayer.contract.IEtherMac;
 // @see ~EtherMacFullDuplex, ~EthernetInterface, ~IOutputQueue, ~EtherEncap, ~Ieee8022Llc
 // @see ~EtherFrame, ~EthernetIIFrame, ~EtherFrameWithLlc, ~Ieee802Ctrl
 //
-simple EtherMac like IEtherMac
+module EtherMac like IEtherMac
 {
     parameters:
         string interfaceTableModule;   // The path to the InterfaceTable module
@@ -114,13 +115,13 @@ simple EtherMac like IEtherMac
         bool promiscuous = default(false);  // if true, all packets are received, otherwise only the
                                             // ones with matching destination MAC address
         bool duplexMode = default(true);    // selects full-duplex (true) or half-duplex (false) operation
-        int txQueueLimit = default(1000);   // maximum number of frames queued up for transmission in the internal queue (only used if queueModule==""); additional frames cause a runtime error
-        string queueModule = default("");   // name of optional external queue module
+        int txQueueLimit = default(1000);   // maximum number of frames queued up for transmission in the internal queue, additional frames cause a runtime error
         bool frameBursting = default(true); // enable/disable frame bursting mode in Gigabit Ethernet
         int mtu @unit(B) = default(1500B);
         @lifecycleSupport;
         double stopOperationExtraTime @unit(s) = default(-1s);    // extra time after lifecycle stop operation finished
         double stopOperationTimeout @unit(s) = default(2s);    // timeout value for lifecycle stop operation
+        @class(EtherMac);
         @display("i=block/rxtx");
 
         @signal[rxPkOk](type=inet::Packet);
@@ -152,5 +153,12 @@ simple EtherMac like IEtherMac
         input upperLayerIn @labels(EtherFrame);    // to ~EtherEncap or ~IMacRelayUnit
         output upperLayerOut @labels(EtherFrame);  // to ~EtherEncap or ~IMacRelayUnit
         inout phys @labels(EtherFrame); // to physical layer or the network
+    submodules:
+        queue: <default("DropTailQueue")> like IPacketQueue {
+            parameters:
+                frameCapacity = default(txQueueLimit);
+                @display("p=100,100");
+        }
+    connections allowunconnected:
 }
 

@@ -18,7 +18,7 @@
 #ifndef __INET_ETHERFRAMECLASSIFIER_H
 #define __INET_ETHERFRAMECLASSIFIER_H
 
-#include "inet/common/INETDefs.h"
+#include "inet/common/newqueue/base/PacketClassifierBase.h"
 
 namespace inet {
 
@@ -29,13 +29,13 @@ namespace inet {
  * - PAUSE frames
  * - others
  */
-class INET_API EtherFrameClassifier : public cSimpleModule
+class INET_API EtherFrameClassifier : public inet::queue::PacketClassifierBase
 {
   public:
     /**
      * Sends the incoming packet to either pauseOut or defaultOut gate.
      */
-    virtual void handleMessage(cMessage *msg) override;
+    virtual int classifyPacket(Packet *packet) override;
 };
 
 } // namespace inet
