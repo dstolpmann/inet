@@ -272,7 +272,19 @@ class INET_API SymbolErrorRateFromErrorRateIndFilter : public cObjectResultFilte
     virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details) override;
 };
 
+/**
+ * Filter that expects a Packet and outputs its it if the source is the same component as where the filter is used.
+ */
+class INET_API LocalSignalFilter : public cObjectResultFilter
+{
+  protected:
+    cComponent *component = nullptr;
 
+  public:
+    virtual void subscribedTo(cComponent *component, simsignal_t signal) override { this->component = component; }
+    virtual void receiveSignal(cComponent *source, simsignal_t signal, cObject *object, cObject *details) override;
+    virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details) override;
+};
 
 } // namespace filters
 

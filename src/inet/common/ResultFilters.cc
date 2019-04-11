@@ -368,6 +368,18 @@ void SymbolErrorRateFromErrorRateIndFilter::receiveSignal(cResultFilter *prev, s
 #endif  // WITH_RADIO
 }
 
+Register_ResultFilter("localSignal", LocalSignalFilter);
+
+void LocalSignalFilter::receiveSignal(cComponent *source, simsignal_t signal, cObject *object, cObject *details)
+{
+    if (source == component)
+        cResultListener::receiveSignal(source, signal, object, details);
+}
+
+void LocalSignalFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details)
+{
+    fire(this, t, object, details);
+}
 
 } // namespace filters
 
