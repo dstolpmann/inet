@@ -18,8 +18,10 @@
 
 package inet.networklayer.diffserv;
 
-import inet.common.queue.FifoQueue;
-import inet.common.queue.RedDropper;
+import inet.common.newqueue.PacketMultiplexer;
+import inet.common.newqueue.PacketQueue;
+import inet.common.newqueue.RedDropper;
+
 
 //
 // This is an example queue, that implements
@@ -63,8 +65,11 @@ module AFxyQueue
         input afx3In;
         output out;
     submodules:
-        fifoQueue: FifoQueue {
+        fifoQueue: PacketQueue {
             @display("p=250,100");
+        }
+        multiplexer: PacketMultiplexer {
+            @display("p=175,100");
         }
         redDropper: RedDropper {
             numGates = 3;
@@ -78,9 +83,10 @@ module AFxyQueue
         afx1In --> { @display("m=w"); } --> redDropper.in[0];
         afx2In --> { @display("m=w"); } --> redDropper.in[1];
         afx3In --> { @display("m=w"); } --> redDropper.in[2];
-        redDropper.out[0] --> { @display("m=m,100,20,0,50"); } --> fifoQueue.in++;
-        redDropper.out[1] --> { @display("m=m,100,50,0,50"); } --> fifoQueue.in++;
-        redDropper.out[2] --> { @display("m=m,100,80,0,50"); } --> fifoQueue.in++;
+        redDropper.out[0] --> { @display("m=m,100,20,0,50"); } --> multiplexer.in++;
+        redDropper.out[1] --> { @display("m=m,100,50,0,50"); } --> multiplexer.in++;
+        redDropper.out[2] --> { @display("m=m,100,80,0,50"); } --> multiplexer.in++;
+        multiplexer.out --> fifoQueue.in;
         fifoQueue.out --> { @display("m=e"); } --> out;
 }
 
