@@ -18,23 +18,20 @@
 
 package inet.examples.diffserv.onedomain;
 
-import inet.common.queue.DropTailQueue;
-import inet.common.queue.FifoQueue;
-import inet.common.queue.IOutputQueue;
-import inet.common.queue.RedDropper;
-import inet.common.queue.WrrScheduler;
+import inet.common.newqueue.CompoundPacketQueue;
+import inet.common.newqueue.DropTailQueue;
+import inet.common.newqueue.PacketMultiplexer;
+import inet.common.newqueue.PacketQueue;
+import inet.common.newqueue.RedDropper;
+import inet.common.newqueue.WrrScheduler;
 import inet.networklayer.diffserv.BehaviorAggregateClassifier;
 
 
 //
 // Diffserv Queue used in Experiment 2.1 - 2.4.
 //
-module DSQueue2 like IOutputQueue
+module DSQueue2 extends CompoundPacketQueue
 {
-    gates:
-        input in;
-        output out;
-
     submodules:
         classifier: BehaviorAggregateClassifier {
             dscps = "AF11 AF12 AF13";
@@ -44,7 +41,10 @@ module DSQueue2 like IOutputQueue
             numGates = 3;
             @display("p=250,100");
         }
-        afQueue: FifoQueue {
+        mux: PacketMultiplexer {
+            @display("p=325,100");
+        }
+        afQueue: PacketQueue {
             @display("p=400,100");
         }
         beQueue: DropTailQueue {
@@ -55,14 +55,15 @@ module DSQueue2 like IOutputQueue
         }
     connections:
         in --> classifier.in;
-        classifier.outs++ --> red.in[0];
-        classifier.outs++ --> red.in[1];
-        classifier.outs++ --> red.in[2];
+        classifier.out++ --> red.in[0];
+        classifier.out++ --> red.in[1];
+        classifier.out++ --> red.in[2];
         classifier.defaultOut --> beQueue.in;
 
-        red.out[0] --> afQueue.in++;
-        red.out[1] --> afQueue.in++;
-        red.out[2] --> afQueue.in++;
+        red.out[0] --> mux.in++;
+        red.out[1] --> mux.in++;
+        red.out[2] --> mux.in++;
+        mux.out --> afQueue.in;
         beQueue.out --> wrr.in++;
         afQueue.out --> wrr.in++;
         wrr.out --> out;

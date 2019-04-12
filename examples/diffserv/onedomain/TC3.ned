@@ -54,7 +54,7 @@ module TC3 like ITrafficConditioner
         }
     connections:
         in --> classifier.in;
-        classifier.outs++ --> meter.in++;
+        classifier.out++ --> meter.in;
         classifier.defaultOut --> join.in++;
         meter.redOut --> sink.in++;
         meter.greenOut --> join.in++;
