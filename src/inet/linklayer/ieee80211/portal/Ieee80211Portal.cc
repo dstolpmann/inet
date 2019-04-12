@@ -109,7 +109,6 @@ void Ieee80211Portal::decapsulate(Packet *packet)
     ethernetHeader->setDest(packet->getTag<MacAddressInd>()->getDestAddress());
     ethernetHeader->setTypeOrLength(typeOrLength);
     packet->insertAtFront(ethernetHeader);
-    EtherEncap::addPaddingAndFcs(packet, fcsMode);
     packet->addTagIfAbsent<DispatchProtocolReq>()->setProtocol(&Protocol::ethernetMac);
     packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetMac);
 #else // ifdef WITH_ETHERNET

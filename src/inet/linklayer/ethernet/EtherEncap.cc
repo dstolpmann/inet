@@ -162,7 +162,6 @@ void EtherEncap::processPacketFromHigherLayer(Packet *packet)
     ethHeader->setTypeOrLength(typeOrLength);
     packet->insertAtFront(ethHeader);
 
-    EtherEncap::addPaddingAndFcs(packet, fcsMode);
 
     packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetMac);
     EV_INFO << "Sending " << packet << " to lower layer.\n";
@@ -204,7 +203,6 @@ void EtherEncap::addFcs(Packet *packet, FcsMode fcsMode)
 const Ptr<const EthernetMacHeader> EtherEncap::decapsulateMacHeader(Packet *packet)
 {
     auto ethHeader = packet->popAtFront<EthernetMacHeader>();
-    packet->popAtBack<EthernetFcs>(ETHER_FCS_BYTES);
 
     // add Ieee802Ctrl to packet
     auto macAddressInd = packet->addTagIfAbsent<MacAddressInd>();
@@ -309,7 +307,6 @@ void EtherEncap::handleSendPause(cMessage *msg)
     packet->insertAtFront(frame);
     hdr->setTypeOrLength(ETHERTYPE_FLOW_CONTROL);
     packet->insertAtFront(hdr);
-    EtherEncap::addPaddingAndFcs(packet, fcsMode);
     packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetMac);
 
     EV_INFO << "Sending " << frame << " to lower layer.\n";

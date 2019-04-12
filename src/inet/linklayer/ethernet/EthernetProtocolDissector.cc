@@ -34,7 +34,9 @@ void EthernetPhyDissector::dissect(Packet *packet, const Protocol *protocol, ICa
     const auto& header = packet->popAtFront<EthernetPhyHeader>();
     callback.startProtocolDataUnit(&Protocol::ethernetPhy);
     callback.visitChunk(header, &Protocol::ethernetPhy);
+    const auto& fcs = packet->popAtBack<EthernetFcs>(B(4));
     callback.dissectPacket(packet, &Protocol::ethernetMac);
+    callback.visitChunk(fcs, &Protocol::ethernetMac);
     callback.endProtocolDataUnit(&Protocol::ethernetPhy);
 }
 
@@ -43,7 +45,6 @@ void EthernetMacDissector::dissect(Packet *packet, const Protocol *protocol, ICa
     const auto& header = packet->popAtFront<EthernetMacHeader>();
     callback.startProtocolDataUnit(&Protocol::ethernetMac);
     callback.visitChunk(header, &Protocol::ethernetMac);
-    const auto& fcs = packet->popAtBack<EthernetFcs>(B(4));
     if (isEth2Header(*header)) {
         auto payloadProtocol = ProtocolGroup::ethertype.findProtocol(header->getTypeOrLength());
         callback.dissectPacket(packet, payloadProtocol);
@@ -61,7 +62,6 @@ void EthernetMacDissector::dissect(Packet *packet, const Protocol *protocol, ICa
         const auto& padding = packet->popAtFront(paddingLength);        // remove padding (type is not EthernetPadding!)
         callback.visitChunk(padding, &Protocol::ethernetMac);
     }
-    callback.visitChunk(fcs, &Protocol::ethernetMac);
     callback.endProtocolDataUnit(&Protocol::ethernetMac);
 }
 

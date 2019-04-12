@@ -27,6 +27,7 @@
 #include "inet/common/packet/Packet.h"
 #include "inet/common/queue/IPassiveQueue.h"
 #include "inet/linklayer/base/MacBase.h"
+#include "inet/linklayer/common/FcsMode_m.h"
 #include "inet/linklayer/common/MacAddress.h"
 #include "inet/linklayer/ethernet/EtherFrame_m.h"
 #include "inet/networklayer/common/InterfaceEntry.h"
@@ -137,6 +138,7 @@ class INET_API EtherMacBase : public MacBase
     bool promiscuous = false;    // if true, passes up all received frames
     bool duplexMode = false;    // true if operating in full-duplex mode
     bool frameBursting = false;    // frame bursting on/off (Gigabit Ethernet)
+    FcsMode fcsMode = FCS_MODE_UNDEFINED;
 
     // gate pointers, etc.
     MacQueue txQueue;    // the output queue

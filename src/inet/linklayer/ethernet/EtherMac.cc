@@ -204,12 +204,19 @@ void EtherMac::handleMessageWhenUp(cMessage *msg)
 
 void EtherMac::handleUpperPacket(Packet *packet)
 {
-    ASSERT(packet->getDataLength() >= MIN_ETHERNET_FRAME_BYTES);
 
     EV_INFO << "Received " << packet << " from upper layer." << endl;
 
     numFramesFromHL++;
     emit(packetReceivedFromUpperSignal, packet);
+
+    //check existing FCS - for error detection!!!
+    {
+        auto fcs = packet->peekAtBack(ETHER_FCS_BYTES);
+        if (dynamicPtrCast<const EthernetFcs>(fcs)) {
+            throw cRuntimeError("upper layer packet already has FCS!!!");
+        }
+    }
 
     MacAddress address = getMacAddress();
 
@@ -244,8 +251,6 @@ void EtherMac::handleUpperPacket(Packet *packet)
         newFrame->setSrc(address);
         packet->insertAtFront(newFrame);
         frame = newFrame;
-        auto oldFcs = packet->removeAtBack<EthernetFcs>();
-        EtherEncap::addFcs(packet, oldFcs->getFcsMode());
     }
 
     if (txQueue.extQueue) {
@@ -522,10 +527,7 @@ void EtherMac::startFrameTransmission()
     bool inBurst = frameBursting && framesSentInBurst;
     B minFrameLength = duplexMode ? curEtherDescr->frameMinBytes : (inBurst ? curEtherDescr->frameInBurstMinBytes : curEtherDescr->halfDuplexFrameMinBytes);
 
-    if (frame->getDataLength() < minFrameLength) {
-        auto oldFcs = frame->removeAtBack<EthernetFcs>(B(4));
-        EtherEncap::addPaddingAndFcs(frame, oldFcs->getFcsMode(), minFrameLength);
-    }
+    EtherEncap::addPaddingAndFcs(frame, fcsMode, minFrameLength);
 
     // add preamble and SFD (Starting Frame Delimiter), then send out
     encapsulate(frame);
@@ -830,6 +832,9 @@ void EtherMac::frameReceptionComplete()
         delete packet;
         return;
     }
+
+    // remove FCS
+    packet->popAtBack(ETHER_FCS_BYTES);
 
     const auto& frame = packet->peekAtFront<EthernetMacHeader>();
     if (dropFrameNotForUs(packet, frame))

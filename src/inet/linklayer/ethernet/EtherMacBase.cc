@@ -170,6 +170,8 @@ void EtherMacBase::initialize(int stage)
         transmissionChannel = nullptr;
         curTxFrame = nullptr;
 
+        fcsMode = parseFcsMode(getParentModule()->par("fcsMode"));
+
         initializeFlags();
 
         initializeStatistics();
@@ -412,7 +414,7 @@ bool EtherMacBase::verifyCrcAndLength(Packet *packet)
     EV_STATICCONTEXT;
 
     auto ethHeader = packet->peekAtFront<EthernetMacHeader>();          //FIXME can I use any flags?
-    const auto& ethTrailer = packet->peekAtBack<EthernetFcs>(B(ETHER_FCS_BYTES));          //FIXME can I use any flags?
+    const auto& ethTrailer = packet->peekAtBack<EthernetFcs>(ETHER_FCS_BYTES);          //FIXME can I use any flags?
 
     switch(ethTrailer->getFcsMode()) {
         case FCS_DECLARED_CORRECT:
