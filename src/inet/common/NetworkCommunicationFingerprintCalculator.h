@@ -20,6 +20,13 @@
 
 namespace inet {
 
+/**
+ * Network Communication Fingerprint Calculator
+ *
+ * usage:
+ *   ini file: fingerprintcalculator-class=inet::NetworkCommunicationFingerprintCalculator
+ *   commandline: --fingerprintcalculator-class=inet::NetworkCommunicationFingerprintCalculator
+ */
 class INET_API NetworkCommunicationFingerprintCalculator : public cSingleFingerprintCalculator
 {
   protected:

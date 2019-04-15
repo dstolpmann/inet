@@ -85,7 +85,6 @@ void NetworkCommunicationFingerprintCalculator::addEvent(cEvent *event)
                 cSingleFingerprintCalculator::addEvent(event);
         }
     }
-
 }
 
 } // namespace
