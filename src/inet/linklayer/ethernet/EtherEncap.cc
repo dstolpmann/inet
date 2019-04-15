@@ -162,13 +162,6 @@ void EtherEncap::processPacketFromHigherLayer(Packet *packet)
     ethHeader->setTypeOrLength(typeOrLength);
     packet->insertAtFront(ethHeader);
 
-    //KLUDGE padding
-    B paddingLength = MIN_ETHERNET_FRAME_BYTES - ETHER_FCS_BYTES - B(packet->getByteLength());
-    if (paddingLength > B(0)) {
-        const auto& ethPadding = makeShared<EthernetPadding>();
-        ethPadding->setChunkLength(paddingLength);
-        packet->insertAtBack(ethPadding);
-    }
 
     packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetMac);
     EV_INFO << "Sending " << packet << " to lower layer.\n";
