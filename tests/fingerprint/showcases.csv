@@ -1,11 +1,11 @@
 # working directory, command line arguments, simulation time limit, fingerprint, expected result, tags
-/showcases/general/diffserv/,        -f omnetpp.ini -c VoIP_WithoutQoS -r 0,        50s,         5272-144d/tplx, PASS,
-/showcases/general/diffserv/,        -f omnetpp.ini -c VoIP_WithPolicing -r 0,      50s,         e865-a6ba/tplx, PASS,
-/showcases/general/diffserv/,        -f omnetpp.ini -c VoIP_WithPolicingAndQueueing -r 0, 50s,   5d25-7ea9/tplx, PASS,
+/showcases/general/diffserv/,        -f omnetpp.ini -c VoIP_WithoutQoS -r 0,        50s,         9961-d1aa/tplx, PASS,
+/showcases/general/diffserv/,        -f omnetpp.ini -c VoIP_WithPolicing -r 0,      50s,         d008-a919/tplx, PASS,
+/showcases/general/diffserv/,        -f omnetpp.ini -c VoIP_WithPolicingAndQueueing -r 0, 50s,   d9ec-2a73/tplx, PASS,
 
 /showcases/general/dynamic/,         -f omnetpp.ini -c General -r 0,                100s,         8f13-047c/tplx, PASS,
 
-/showcases/general/pcaprecording/,   -f omnetpp.ini -c PcapRecording -r 0,          10s,         cdaa-f06e/tplx, PASS,
+/showcases/general/pcaprecording/,   -f omnetpp.ini -c PcapRecording -r 0,          10s,         6326-a4cb/tplx, PASS,
 
 /showcases/mobility/basic/,          -f omnetpp.ini -c LinearMobility -r 0,         100s,         1211-c17f/tplx, PASS,
 /showcases/mobility/basic/,          -f omnetpp.ini -c CircleMobility -r 0,         100s,         6226-0ee5/tplx, PASS,
@@ -29,12 +29,12 @@
 /showcases/routing/manet/,           -f omnetpp.ini -c Dsdv -r 0,                   100s,         838c-e88d/tplx, PASS,
 /showcases/routing/manet/,           -f omnetpp.ini -c Gpsr -r 0,                   100s,         73e8-b4d6/tplx, PASS,
 
-/showcases/visualizer/advanced/,     -f omnetpp.ini -c IncludingMultipleVisualizerModules -r 0, 100s, 7d5d-f9fd/tplx, PASS,
-/showcases/visualizer/advanced/,     -f omnetpp.ini -c Wireless -r 0,               5s,         b817-7fe3/tplx, PASS,
+/showcases/visualizer/advanced/,     -f omnetpp.ini -c IncludingMultipleVisualizerModules -r 0, 100s, 229b-6a73/tplx, PASS,
+/showcases/visualizer/advanced/,     -f omnetpp.ini -c Wireless -r 0,               5s,         16c7-039c/tplx, PASS,
 
-/showcases/visualizer/datalinkactivity/, -f omnetpp.ini -c EnablingVisualizationWired -r 0,                     500s,            66a1-c1b9/tplx, PASS,
+/showcases/visualizer/datalinkactivity/, -f omnetpp.ini -c EnablingVisualizationWired -r 0,                     500s,            66d8-bf8d/tplx, PASS,
 /showcases/visualizer/datalinkactivity/, -f omnetpp.ini -c EnablingVisualizationWireless -r 0,                  500s,            31cf-4e16/tplx, PASS,
-/showcases/visualizer/datalinkactivity/, -f omnetpp.ini -c Filtering -r 0,                                      500s,            a60b-4337/tplx, PASS,
+/showcases/visualizer/datalinkactivity/, -f omnetpp.ini -c Filtering -r 0,                                      500s,            fe0d-7993/tplx, PASS,
 /showcases/visualizer/datalinkactivity/, -f omnetpp.ini -c ActivityLevel -r 0,      100s,         a8a0-31de/tplx, PASS,
 /showcases/visualizer/datalinkactivity/, -f omnetpp.ini -c Dynamic -r 0,                                        500s,            717f-ae78/tplx, PASS,
 
@@ -57,7 +57,7 @@
 /showcases/visualizer/instrumentfigures/,    -f omnetpp.ini -c General -r 0,                                            3s,              9b60-2e32/tplx, PASS,
 
 /showcases/visualizer/interfacetable/, -f omnetpp.ini -c EnablingVisualization -r 0,                  5s,            0000-0000/tplx, PASS,
-/showcases/visualizer/interfacetable/, -f omnetpp.ini -c AdvancedFeatures -r 0,                       5s,            cb71-ccd3/tplx, PASS,
+/showcases/visualizer/interfacetable/, -f omnetpp.ini -c AdvancedFeatures -r 0,                       5s,            ac59-d3ea/tplx, PASS,
 
 /showcases/visualizer/mobility/,     -f omnetpp.ini -c VisualizingFeatures -r 0,                                500s,            54a1-0f8d/tplx, PASS,
 
@@ -67,20 +67,20 @@
 /showcases/visualizer/networknode/,  -f omnetpp.ini -c AddingMovement -r 0,         1s,         3a4c-d088/tplx, PASS,
 /showcases/visualizer/networknode/,  -f omnetpp.ini -c BoxmanRotated -r 0,          1s,         3a4c-d088/tplx, PASS,
 
-/showcases/visualizer/networkpathactivity/, -f omnetpp.ini -c EnablingVisualization -r 0,                       500s,            9f43-7e0a/tplx, PASS,
-/showcases/visualizer/networkpathactivity/, -f omnetpp.ini -c StaticNetworkPaths -r 0,                          500s,            b42b-614c/tplx, PASS,
+/showcases/visualizer/networkpathactivity/, -f omnetpp.ini -c EnablingVisualization -r 0,                       500s,            98d3-eddf/tplx, PASS,
+/showcases/visualizer/networkpathactivity/, -f omnetpp.ini -c StaticNetworkPaths -r 0,                          500s,            2e0f-6c8c/tplx, PASS,
 /showcases/visualizer/networkpathactivity/, -f omnetpp.ini -c Mobile -r 0,                                      500s,            cd60-7798/tplx, PASS,
-/showcases/visualizer/networkpathactivity/, -f omnetpp.ini -c ChangingPaths -r 0,                               250s,            6a92-cbc6/tplx, PASS,
+/showcases/visualizer/networkpathactivity/, -f omnetpp.ini -c ChangingPaths -r 0,                               250s,            c321-250f/tplx, PASS,
 
 /showcases/visualizer/obstacleloss/, -f omnetpp.ini -c EnablingVisualization -r 0,                              250s,            2410-572d/tplx, PASS,
 /showcases/visualizer/obstacleloss/, -f omnetpp.ini -c MultipleObstacles -r 0,                                  500s,            89ca-0f0a/tplx, PASS,
 
 /showcases/visualizer/osgdemo/,      -f omnetpp.ini -c General -r 0,                100s,         0000-0000/tplx, ERROR,
 
-/showcases/visualizer/packetdrop/,   -f omnetpp.ini -c QueueOverflow -r 0,                                      2002ms,            6c7f-53d6/tplx, PASS,
+/showcases/visualizer/packetdrop/,   -f omnetpp.ini -c QueueOverflow -r 0,                                      2002ms,            c93e-fd1a/tplx, PASS,
 /showcases/visualizer/packetdrop/,   -f omnetpp.ini -c ArpResolutionFailed -r 0,                                500s,            9f65-bc35/tplx, PASS,
 /showcases/visualizer/packetdrop/,   -f omnetpp.ini -c MACRetryLimitReached -r 0,                               500s,            a09f-5012/tplx, PASS,
-/showcases/visualizer/packetdrop/,   -f omnetpp.ini -c InterfaceNotConnected -r 0,                              500s,            f64d-a4cf/tplx, PASS,
+/showcases/visualizer/packetdrop/,   -f omnetpp.ini -c InterfaceNotConnected -r 0,                              500s,            b60d-e48f/tplx, PASS,
 /showcases/visualizer/packetdrop/,   -f omnetpp.ini -c NoRouteToDestination -r 0,                               500s,            4c38-3589/tplx, PASS,
 
 /showcases/visualizer/physicallinkactivity/, -f omnetpp.ini -c EnablingVisualization -r 0,                      500s,            40ed-6dfa/tplx, PASS,
@@ -107,12 +107,12 @@
 /showcases/visualizer/styling/,      -f omnetpp.ini -c Icon -r 0,                   25s,         3409-985d/tplx, PASS,
 /showcases/visualizer/styling/,      -f omnetpp.ini -c Annotation -r 0,             25s,         4f74-c787/tplx, PASS,
 
-/showcases/visualizer/transportconnection/, -f omnetpp.ini -c EnablingVisualization -r 0,                       2s,            4cdd-db33/tplx, PASS,
-/showcases/visualizer/transportconnection/, -f omnetpp.ini -c MultipleConnections -r 0,                         2s,            7a53-b375/tplx, PASS,
+/showcases/visualizer/transportconnection/, -f omnetpp.ini -c EnablingVisualization -r 0,                       2s,            ab9d-dc55/tplx, PASS,
+/showcases/visualizer/transportconnection/, -f omnetpp.ini -c MultipleConnections -r 0,                         2s,            29f7-d98d/tplx, PASS,
 
-/showcases/visualizer/transportpathactivity/, -f omnetpp.ini -c EnablingPathVisualizationWired -r 0,            500s,            09af-5b21/tplx, PASS,
+/showcases/visualizer/transportpathactivity/, -f omnetpp.ini -c EnablingPathVisualizationWired -r 0,            500s,            5ec1-7b8e/tplx, PASS,
 /showcases/visualizer/transportpathactivity/, -f omnetpp.ini -c EnablingPathVisualizationWireless -r 0,         500s,            e56a-1601/tplx, PASS,
-/showcases/visualizer/transportpathactivity/, -f omnetpp.ini -c Filtering -r 0,     100s,         b79c-e86d/tplx, PASS,
+/showcases/visualizer/transportpathactivity/, -f omnetpp.ini -c Filtering -r 0,     100s,         e171-4914/tplx, PASS,
 
 /showcases/wireless/errorrate/,      -f omnetpp.ini -c General -r '$bitrate==6 && $distance==50',               500s,            be46-e137/tplx, PASS,
 /showcases/wireless/errorrate/,      -f omnetpp.ini -c General -r '$bitrate==9 && $distance==50',               500s,            172a-437d/tplx, PASS,
@@ -177,7 +177,7 @@
 /showcases/wireless/levelofdetail/,  -f omnetpp.ini -c General -r '$detail=="bit" && $modulation=="QAM-64" && $fecType=="" && $distance==225',                      100s,            8ad4-fcf9/tplx, PASS,
 /showcases/wireless/levelofdetail/,  -f omnetpp.ini -c General -r '$detail=="symbol" && $modulation=="QAM-64" && $fecType=="" && $distance==125',                   100s,            d007-5ea5/tplx, PASS,
 
-/showcases/wireless/multiradio/,     -f omnetpp.ini -c General -r 0,      100s,         cf4a-9de1/tplx, PASS,
+/showcases/wireless/multiradio/,     -f omnetpp.ini -c General -r 0,      100s,         c17d-00ab/tplx, PASS,
 
 /showcases/wireless/pathloss/,       -f omnetpp.ini -c General -r 0,                100s,         c37d-91e0/tplx, PASS,
 
@@ -198,13 +198,13 @@
 /showcases/wireless/scaling/,        -f omnetpp.ini -c IdealRadioPing -r 0,                                     500s,            37e4-12cc/tplx, PASS,
 /showcases/wireless/scaling/,        -f omnetpp.ini -c IdealRadioUdp -r 0,                                      500s,            b428-a77d/tplx, PASS,
 
-/showcases/wireless/sensornetwork/,  -f omnetpp.ini -c BMac -r 0,                   100s,         2171-bb23/tplx, PASS,
-/showcases/wireless/sensornetwork/,  -f omnetpp.ini -c XMac -r 0,                   100s,         469c-01fe/tplx, PASS,
-/showcases/wireless/sensornetwork/,  -f omnetpp.ini -c LMac -r 0,                   100s,         97e1-c0f0/tplx, PASS,
+/showcases/wireless/sensornetwork/,  -f omnetpp.ini -c BMac -r 0,                   100s,         4974-65d7/tplx, PASS,
+/showcases/wireless/sensornetwork/,  -f omnetpp.ini -c XMac -r 0,                   100s,         0223-2238/tplx, PASS,
+/showcases/wireless/sensornetwork/,  -f omnetpp.ini -c LMac -r 0,                   100s,         322d-a600/tplx, PASS,
 # /showcases/wireless/sensornetwork/,  -f omnetpp.ini -c StatisticBase -r 0,          100s,         0000-0000/tplx, PASS,   # StatisticBase extended
-/showcases/wireless/sensornetwork/,  -f omnetpp.ini -c StatisticBMac -r 100,          100s,         0727-1b4d/tplx, PASS,
-/showcases/wireless/sensornetwork/,  -f omnetpp.ini -c StatisticXMac -r 100,          100s,         07da-c1bc/tplx, PASS,
-/showcases/wireless/sensornetwork/,  -f omnetpp.ini -c StatisticLMac -r 100,          100s,         93a3-9cdf/tplx, PASS,
+/showcases/wireless/sensornetwork/,  -f omnetpp.ini -c StatisticBMac -r 100,          100s,         7ad7-8a67/tplx, PASS,
+/showcases/wireless/sensornetwork/,  -f omnetpp.ini -c StatisticXMac -r 100,          100s,         d395-b776/tplx, PASS,
+/showcases/wireless/sensornetwork/,  -f omnetpp.ini -c StatisticLMac -r 100,          100s,         d162-47ff/tplx, PASS,
 
 /showcases/wireless/throughput/,     -f omnetpp.ini -c General -r 0,                1s,         ed65-fd19/tplx, PASS,
 
