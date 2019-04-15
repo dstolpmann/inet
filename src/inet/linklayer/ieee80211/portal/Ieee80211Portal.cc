@@ -109,6 +109,16 @@ void Ieee80211Portal::decapsulate(Packet *packet)
     ethernetHeader->setDest(packet->getTag<MacAddressInd>()->getDestAddress());
     ethernetHeader->setTypeOrLength(typeOrLength);
     packet->insertAtFront(ethernetHeader);
+
+    //KLUDGE padding
+    B paddingLength = MIN_ETHERNET_FRAME_BYTES - ETHER_FCS_BYTES - B(packet->getByteLength());
+    if (paddingLength > B(0)) {
+        const auto& ethPadding = makeShared<EthernetPadding>();
+        ethPadding->setChunkLength(paddingLength);
+        packet->insertAtBack(ethPadding);
+    }
+
+
     packet->addTagIfAbsent<DispatchProtocolReq>()->setProtocol(&Protocol::ethernetMac);
     packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetMac);
 #else // ifdef WITH_ETHERNET
