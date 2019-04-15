@@ -405,6 +405,7 @@ void EtherMacBase::decapsulate(Packet *packet)
     auto phyHeader = packet->popAtFront<EthernetPhyHeader>();
     if (phyHeader->getSrcMacFullDuplex() != duplexMode)
         throw cRuntimeError("Ethernet misconfiguration: MACs on the same link must be all in full duplex mode, or all in half-duplex mode");
+    ASSERT(packet->getDataLength() >= MIN_ETHERNET_FRAME_BYTES);
     packet->addTagIfAbsent<PacketProtocolTag>()->setProtocol(&Protocol::ethernetMac);
 }
 
