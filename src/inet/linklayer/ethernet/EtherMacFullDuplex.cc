@@ -106,8 +106,7 @@ void EtherMacFullDuplex::startFrameTransmission()
     ASSERT(hdr);
     ASSERT(!hdr->getSrc().isUnspecified());
 
-    B kludgeBytes = (curEtherDescr->frameMinBytes > MIN_ETHERNET_FRAME_BYTES) ? B(0) : (hdr->getCTag() ? B(4) : B(0)) + (hdr->getSTag() ? B(4) : B(0));
-    EtherEncap::addPaddingAndFcs(frame, fcsMode, curEtherDescr->frameMinBytes + kludgeBytes);
+    EtherEncap::addPaddingAndFcs(frame, fcsMode, curEtherDescr->frameMinBytes);
 
     // add preamble and SFD (Starting Frame Delimiter), then send out
     encapsulate(frame);
