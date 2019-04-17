@@ -512,6 +512,20 @@ void EtherMac::handleEndIFGPeriod()
     beginSendFrames();
 }
 
+B EtherMac::calculateMinFrameLength()
+{
+    bool inBurst = frameBursting && framesSentInBurst;
+    B minFrameLength = duplexMode ? curEtherDescr->frameMinBytes : (inBurst ? curEtherDescr->frameInBurstMinBytes : curEtherDescr->halfDuplexFrameMinBytes);
+
+    return minFrameLength;
+}
+
+B EtherMac::calculatePaddedFrameLength(Packet *frame)
+{
+    B minFrameLength = calculateMinFrameLength();
+    return std::max(minFrameLength, B(frame->getDataLength()) + ETHER_FCS_BYTES);
+}
+
 void EtherMac::startFrameTransmission()
 {
     ASSERT(curTxFrame);
@@ -524,10 +538,7 @@ void EtherMac::startFrameTransmission()
     ASSERT(hdr);
     ASSERT(!hdr->getSrc().isUnspecified());
 
-    bool inBurst = frameBursting && framesSentInBurst;
-    B minFrameLength = duplexMode ? curEtherDescr->frameMinBytes : (inBurst ? curEtherDescr->frameInBurstMinBytes : curEtherDescr->halfDuplexFrameMinBytes);
-
-    EtherEncap::addPaddingAndFcs(frame, fcsMode, minFrameLength);
+    EtherEncap::addPaddingAndFcs(frame, fcsMode, calculateMinFrameLength());
 
     // add preamble and SFD (Starting Frame Delimiter), then send out
     encapsulate(frame);
@@ -925,7 +936,7 @@ void EtherMac::fillIFGIfInBurst()
         && (simTime() == endIFGMsg->getSendingTime())
         && (framesSentInBurst > 0)
         && (framesSentInBurst < curEtherDescr->maxFramesInBurst)
-        && (bytesSentInBurst + INTERFRAME_GAP_BITS + PREAMBLE_BYTES + SFD_BYTES + curTxFrame->getDataLength()
+        && (bytesSentInBurst + INTERFRAME_GAP_BITS + PREAMBLE_BYTES + SFD_BYTES + calculatePaddedFrameLength(curTxFrame)
             <= curEtherDescr->maxBytesInBurst)
         )
     {
