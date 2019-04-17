@@ -512,17 +512,19 @@ void EtherMac::handleEndIFGPeriod()
     beginSendFrames();
 }
 
-B EtherMac::calculateMinFrameLength()
+B EtherMac::calculateMinFrameLength(Packet *frame)
 {
+    const auto& hdr = frame->peekAtFront<EthernetMacHeader>();
     bool inBurst = frameBursting && framesSentInBurst;
     B minFrameLength = duplexMode ? curEtherDescr->frameMinBytes : (inBurst ? curEtherDescr->frameInBurstMinBytes : curEtherDescr->halfDuplexFrameMinBytes);
 
-    return minFrameLength;
+    B kludgeBytes = (minFrameLength > MIN_ETHERNET_FRAME_BYTES) ? B(0) : (hdr->getCTag() ? B(4) : B(0)) + (hdr->getSTag() ? B(4) : B(0));
+    return minFrameLength + kludgeBytes;
 }
 
 B EtherMac::calculatePaddedFrameLength(Packet *frame)
 {
-    B minFrameLength = calculateMinFrameLength();
+    B minFrameLength = calculateMinFrameLength(frame);
     return std::max(minFrameLength, B(frame->getDataLength()) + ETHER_FCS_BYTES);
 }
 
@@ -538,7 +540,7 @@ void EtherMac::startFrameTransmission()
     ASSERT(hdr);
     ASSERT(!hdr->getSrc().isUnspecified());
 
-    EtherEncap::addPaddingAndFcs(frame, fcsMode, calculateMinFrameLength());
+    EtherEncap::addPaddingAndFcs(frame, fcsMode, calculateMinFrameLength(frame));
 
     // add preamble and SFD (Starting Frame Delimiter), then send out
     encapsulate(frame);
